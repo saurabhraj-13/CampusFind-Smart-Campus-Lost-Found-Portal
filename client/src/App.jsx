@@ -7,16 +7,30 @@ import Dashboard from "./pages/Dashboard";
 import ReportLost from "./pages/ReportLost";
 import ReportFound from "./pages/ReportFound";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
         <Route path="/" element={<Home />} />
+
         <Route path="/login" element={<Login />} />
+
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/report-lost" element={<ReportLost />} />
+
         <Route path="/report-found" element={<ReportFound />} />
 
       </Routes>
