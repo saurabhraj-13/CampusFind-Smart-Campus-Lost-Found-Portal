@@ -20,6 +20,9 @@ function ReportFound() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // API URL
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -77,6 +80,12 @@ function ReportFound() {
       return;
     }
 
+    if (!API_URL) {
+      setError("API configuration is missing. Please try again later.");
+      console.error("VITE_API_URL is not configured.");
+      return;
+    }
+
     if (
       !formData.itemName ||
       !formData.category ||
@@ -104,7 +113,7 @@ function ReportFound() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/found-items",
+        `${API_URL}/api/found-items`,
         {
           method: "POST",
           headers: {
@@ -139,16 +148,12 @@ function ReportFound() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-
       <Navbar />
 
       {/* Header */}
       <section className="bg-gradient-to-r from-green-500 to-emerald-500 dark:from-green-600 dark:to-emerald-600 text-white">
-
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-
           <div className="max-w-2xl">
-
             <span className="inline-block bg-white/20 px-4 py-1 rounded-full text-xs sm:text-sm font-semibold mb-4">
               🟢 Found Item
             </span>
@@ -161,21 +166,16 @@ function ReportFound() {
               Found something on campus? Report it here
               and help return it to its rightful owner.
             </p>
-
           </div>
-
         </div>
-
       </section>
 
       {/* Main Content */}
       <section className="bg-gray-50 dark:bg-gray-950 py-8 sm:py-14 transition-colors duration-300">
-
         <div className="max-w-6xl mx-auto px-4 sm:px-6 grid lg:grid-cols-3 gap-6 sm:gap-8">
 
           {/* Information Card */}
           <div className="lg:col-span-1">
-
             <div className="bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 text-white rounded-2xl p-6 sm:p-7 shadow-lg lg:sticky lg:top-24">
 
               <div className="text-5xl mb-5">
@@ -224,14 +224,11 @@ function ReportFound() {
                 </div>
 
               </div>
-
             </div>
-
           </div>
 
           {/* Form */}
           <div className="lg:col-span-2">
-
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-gray-950 border border-gray-100 dark:border-gray-700 p-5 sm:p-7 transition-colors duration-300">
 
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -256,7 +253,6 @@ function ReportFound() {
 
                 {/* Item Name */}
                 <div>
-
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     Item Name *
                   </label>
@@ -270,12 +266,10 @@ function ReportFound() {
                     className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-4 py-3.5 text-sm sm:text-base outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     required
                   />
-
                 </div>
 
                 {/* Category */}
                 <div>
-
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     Category *
                   </label>
@@ -287,7 +281,6 @@ function ReportFound() {
                     className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3.5 text-sm sm:text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     required
                   >
-
                     <option value="">
                       Select Category
                     </option>
@@ -327,14 +320,11 @@ function ReportFound() {
                     <option value="Other">
                       Other
                     </option>
-
                   </select>
-
                 </div>
 
                 {/* Description */}
                 <div>
-
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     Description *
                   </label>
@@ -348,14 +338,12 @@ function ReportFound() {
                     className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-4 py-3.5 text-sm sm:text-base outline-none resize-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     required
                   />
-
                 </div>
 
                 {/* Location + Date */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
                   <div>
-
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                       Found Location *
                     </label>
@@ -369,11 +357,9 @@ function ReportFound() {
                       className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-4 py-3.5 text-sm sm:text-base outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                       required
                     />
-
                   </div>
 
                   <div>
-
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                       Found Date *
                     </label>
@@ -386,26 +372,20 @@ function ReportFound() {
                       className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-3.5 text-sm sm:text-base outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                       required
                     />
-
                   </div>
 
                 </div>
 
                 {/* Image Upload */}
                 <div>
-
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-
                     Item Image
-
                     <span className="text-gray-400 dark:text-gray-500 font-normal ml-1">
                       (Optional)
                     </span>
-
                   </label>
 
                   {!preview ? (
-
                     <label className="block border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-5 sm:p-8 text-center cursor-pointer hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-950/30 transition">
 
                       <div className="text-4xl mb-3">
@@ -430,11 +410,8 @@ function ReportFound() {
                         onChange={handleImageChange}
                         className="hidden"
                       />
-
                     </label>
-
                   ) : (
-
                     <div className="relative border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
 
                       <img
@@ -452,9 +429,7 @@ function ReportFound() {
                       </button>
 
                     </div>
-
                   )}
-
                 </div>
 
                 {/* Submit */}
@@ -473,13 +448,9 @@ function ReportFound() {
                 </button>
 
               </form>
-
             </div>
-
           </div>
-
         </div>
-
       </section>
 
       <Footer />

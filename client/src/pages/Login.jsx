@@ -15,6 +15,9 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // API URL from environment variable
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -38,11 +41,18 @@ function Login() {
       return;
     }
 
+    // Check API configuration
+    if (!API_URL) {
+      setError("API configuration is missing. Please try again later.");
+      console.error("VITE_API_URL is not configured.");
+      return;
+    }
+
     try {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${API_URL}/api/auth/login`,
         formData
       );
 
@@ -61,11 +71,12 @@ function Login() {
       setTimeout(() => {
         navigate("/");
       }, 800);
-
     } catch (error) {
+      console.error("Login Error:", error);
+
       setError(
         error.response?.data?.message ||
-        "Login failed. Please check your email and password."
+          "Login failed. Please check your email and password."
       );
     } finally {
       setLoading(false);
@@ -74,7 +85,6 @@ function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center px-4 py-10">
-
       <div className="w-full max-w-md">
 
         {/* Back to Home */}
@@ -92,7 +102,6 @@ function Login() {
 
           {/* Logo */}
           <div className="text-center">
-
             <div className="text-4xl mb-2">
               🔎
             </div>
@@ -104,7 +113,6 @@ function Login() {
             <p className="text-gray-500 mt-2">
               Welcome back! Login to continue.
             </p>
-
           </div>
 
           {/* Success Message */}
@@ -125,7 +133,6 @@ function Login() {
 
             {/* Email */}
             <div className="mb-5">
-
               <label className="block mb-2 text-sm font-semibold text-gray-700">
                 Email Address
               </label>
@@ -140,18 +147,15 @@ function Login() {
                 disabled={loading}
                 required
               />
-
             </div>
 
             {/* Password */}
             <div className="mb-6">
-
               <label className="block mb-2 text-sm font-semibold text-gray-700">
                 Password
               </label>
 
               <div className="relative">
-
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -165,16 +169,12 @@ function Login() {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
+                  onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-600"
                 >
                   {showPassword ? "🙈" : "👁️"}
                 </button>
-
               </div>
-
             </div>
 
             {/* Login Button */}
@@ -189,12 +189,10 @@ function Login() {
             >
               {loading ? "Logging in..." : "Login"}
             </button>
-
           </form>
 
           {/* Register */}
           <div className="text-center mt-6">
-
             <p className="text-gray-500">
               Don't have an account?
 
@@ -205,9 +203,7 @@ function Login() {
                 Create Account
               </Link>
             </p>
-
           </div>
-
         </div>
 
         {/* Small Footer Text */}
@@ -216,7 +212,6 @@ function Login() {
         </p>
 
       </div>
-
     </div>
   );
 }

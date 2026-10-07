@@ -14,6 +14,8 @@ function Account() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchAccountData = async () => {
       const token = localStorage.getItem("token");
@@ -23,25 +25,35 @@ function Account() {
         return;
       }
 
+      if (!API_URL) {
+        setError("API configuration is missing. Please try again later.");
+        console.error("VITE_API_URL is not configured.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const headers = {
           Authorization: `Bearer ${token}`,
         };
 
-        const [userResponse, lostResponse, foundResponse] =
-          await Promise.all([
-            fetch("http://localhost:5000/api/auth/me", {
-              headers,
-            }),
+        const [
+          userResponse,
+          lostResponse,
+          foundResponse,
+        ] = await Promise.all([
+          fetch(`${API_URL}/api/auth/me`, {
+            headers,
+          }),
 
-            fetch("http://localhost:5000/api/lost-items/my-items", {
-              headers,
-            }),
+          fetch(`${API_URL}/api/lost-items/my-items`, {
+            headers,
+          }),
 
-            fetch("http://localhost:5000/api/found-items/my-items", {
-              headers,
-            }),
-          ]);
+          fetch(`${API_URL}/api/found-items/my-items`, {
+            headers,
+          }),
+        ]);
 
         const userData = await userResponse.json();
         const lostData = await lostResponse.json();
@@ -85,7 +97,7 @@ function Account() {
     };
 
     fetchAccountData();
-  }, [navigate]);
+  }, [navigate, API_URL]);
 
   const handleDeleteLost = async (itemId) => {
     const confirmDelete = window.confirm(
@@ -98,9 +110,15 @@ function Account() {
 
     const token = localStorage.getItem("token");
 
+    if (!API_URL) {
+      alert("API configuration is missing. Please try again later.");
+      console.error("VITE_API_URL is not configured.");
+      return;
+    }
+
     try {
       const response = await fetch(
-        `http://localhost:5000/api/lost-items/${itemId}`,
+        `${API_URL}/api/lost-items/${itemId}`,
         {
           method: "DELETE",
           headers: {
@@ -144,9 +162,15 @@ function Account() {
 
     const token = localStorage.getItem("token");
 
+    if (!API_URL) {
+      alert("API configuration is missing. Please try again later.");
+      console.error("VITE_API_URL is not configured.");
+      return;
+    }
+
     try {
       const response = await fetch(
-        `http://localhost:5000/api/found-items/${itemId}`,
+        `${API_URL}/api/found-items/${itemId}`,
         {
           method: "DELETE",
           headers: {
@@ -240,14 +264,11 @@ function Account() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-
       <Navbar />
 
       {/* ================= ACCOUNT HEADER ================= */}
       <section className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 dark:from-blue-700 dark:via-blue-800 dark:to-indigo-900 text-white">
-
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
-
           <div className="flex flex-col sm:flex-row sm:items-center gap-5">
 
             {/* Avatar */}
@@ -257,7 +278,6 @@ function Account() {
 
             {/* User Info */}
             <div className="min-w-0">
-
               <p className="text-blue-100 text-xs sm:text-sm font-semibold tracking-wider">
                 MY ACCOUNT
               </p>
@@ -269,13 +289,10 @@ function Account() {
               <p className="text-blue-100 mt-2 text-sm sm:text-base">
                 Manage your CampusFind reports and account.
               </p>
-
             </div>
 
           </div>
-
         </div>
-
       </section>
 
       {/* ================= ACCOUNT CONTENT ================= */}
@@ -289,7 +306,6 @@ function Account() {
 
             {/* Header */}
             <div className="px-5 sm:px-7 pt-6 sm:pt-7 pb-5 border-b border-gray-100 dark:border-gray-700">
-
               <div className="flex items-center gap-3">
 
                 <div className="w-11 h-11 flex-shrink-0 rounded-xl bg-blue-100 dark:bg-blue-950 flex items-center justify-center text-xl">
@@ -297,7 +313,6 @@ function Account() {
                 </div>
 
                 <div className="min-w-0">
-
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">
                     Personal Information
                   </h2>
@@ -305,23 +320,18 @@ function Account() {
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
                     Your CampusFind account details
                   </p>
-
                 </div>
 
               </div>
-
             </div>
 
             {/* Information */}
             <div className="p-5 sm:p-7">
-
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
 
                 {/* Name */}
                 <div className="group bg-gray-50 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-950/50 border border-gray-100 dark:border-gray-700 hover:border-blue-100 dark:hover:border-blue-800 rounded-2xl p-5 transition">
-
                   <div className="flex items-center gap-2 mb-3">
-
                     <span className="text-lg">
                       👤
                     </span>
@@ -329,20 +339,16 @@ function Account() {
                     <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Full Name
                     </p>
-
                   </div>
 
                   <p className="font-bold text-gray-800 dark:text-gray-100 text-lg truncate">
                     {user.name}
                   </p>
-
                 </div>
 
                 {/* Email */}
                 <div className="group bg-gray-50 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-950/50 border border-gray-100 dark:border-gray-700 hover:border-blue-100 dark:hover:border-blue-800 rounded-2xl p-5 transition">
-
                   <div className="flex items-center gap-2 mb-3">
-
                     <span className="text-lg">
                       ✉️
                     </span>
@@ -350,7 +356,6 @@ function Account() {
                     <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Email Address
                     </p>
-
                   </div>
 
                   <p
@@ -359,14 +364,11 @@ function Account() {
                   >
                     {user.email}
                   </p>
-
                 </div>
 
                 {/* Phone */}
                 <div className="group bg-gray-50 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-950/50 border border-gray-100 dark:border-gray-700 hover:border-blue-100 dark:hover:border-blue-800 rounded-2xl p-5 transition">
-
                   <div className="flex items-center gap-2 mb-3">
-
                     <span className="text-lg">
                       📱
                     </span>
@@ -374,19 +376,15 @@ function Account() {
                     <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Phone Number
                     </p>
-
                   </div>
 
                   <p className="font-bold text-gray-800 dark:text-gray-100 text-lg break-words">
                     {user.phone}
                   </p>
-
                 </div>
 
               </div>
-
             </div>
-
           </div>
 
           {/* ================= STATISTICS ================= */}
@@ -400,7 +398,6 @@ function Account() {
               </div>
 
               <div className="relative">
-
                 <div className="w-11 h-11 rounded-xl bg-red-500 text-white flex items-center justify-center text-xl mb-4">
                   🔴
                 </div>
@@ -416,9 +413,7 @@ function Account() {
                 <p className="text-xs text-red-500 dark:text-red-400 mt-1">
                   Items reported lost
                 </p>
-
               </div>
-
             </div>
 
             {/* Found */}
@@ -429,7 +424,6 @@ function Account() {
               </div>
 
               <div className="relative">
-
                 <div className="w-11 h-11 rounded-xl bg-green-500 text-white flex items-center justify-center text-xl mb-4">
                   🟢
                 </div>
@@ -445,22 +439,17 @@ function Account() {
                 <p className="text-xs text-green-600 dark:text-green-400 mt-1">
                   Items reported found
                 </p>
-
               </div>
-
             </div>
 
           </div>
-
         </div>
 
         {/* ================= MY LOST ITEMS ================= */}
         <section className="mb-10 sm:mb-12">
 
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6">
-
             <div>
-
               <div className="flex items-center gap-3">
 
                 <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-red-100 dark:bg-red-950 flex items-center justify-center">
@@ -470,13 +459,11 @@ function Account() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
                   My Lost Items
                 </h2>
-
               </div>
 
               <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">
                 Items you have reported as lost.
               </p>
-
             </div>
 
             <button
@@ -485,7 +472,6 @@ function Account() {
             >
               + Report Lost
             </button>
-
           </div>
 
           {lostItems.length === 0 ? (
@@ -509,13 +495,11 @@ function Account() {
               >
                 Report Your First Lost Item
               </button>
-
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
 
               {lostItems.map((item) => (
-
                 <div
                   key={item._id}
                   className="bg-white dark:bg-gray-900 rounded-2xl shadow-md dark:shadow-gray-950 border border-gray-100 dark:border-gray-700 overflow-hidden hover:-translate-y-1 hover:shadow-lg transition duration-300"
@@ -523,7 +507,7 @@ function Account() {
 
                   {item.image ? (
                     <img
-                      src={`http://localhost:5000${item.image}`}
+                      src={`${API_URL}${item.image}`}
                       alt={item.itemName}
                       className="w-full h-48 sm:h-52 object-contain bg-gray-100 dark:bg-gray-800"
                     />
@@ -594,16 +578,12 @@ function Account() {
                       </button>
 
                     </div>
-
                   </div>
-
                 </div>
-
               ))}
 
             </div>
           )}
-
         </section>
 
         {/* ================= MY FOUND ITEMS ================= */}
@@ -612,7 +592,6 @@ function Account() {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6">
 
             <div>
-
               <div className="flex items-center gap-3">
 
                 <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-green-100 dark:bg-green-950 flex items-center justify-center">
@@ -622,13 +601,11 @@ function Account() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
                   My Found Items
                 </h2>
-
               </div>
 
               <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">
                 Items you have reported as found.
               </p>
-
             </div>
 
             <button
@@ -667,7 +644,6 @@ function Account() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
 
               {foundItems.map((item) => (
-
                 <div
                   key={item._id}
                   className="bg-white dark:bg-gray-900 rounded-2xl shadow-md dark:shadow-gray-950 border border-gray-100 dark:border-gray-700 overflow-hidden hover:-translate-y-1 hover:shadow-lg transition duration-300"
@@ -675,7 +651,7 @@ function Account() {
 
                   {item.image ? (
                     <img
-                      src={`http://localhost:5000${item.image}`}
+                      src={`${API_URL}${item.image}`}
                       alt={item.itemName}
                       className="w-full h-48 sm:h-52 object-contain bg-gray-100 dark:bg-gray-800"
                     />
@@ -746,11 +722,8 @@ function Account() {
                       </button>
 
                     </div>
-
                   </div>
-
                 </div>
-
               ))}
 
             </div>
@@ -761,7 +734,6 @@ function Account() {
       </main>
 
       <Footer />
-
     </div>
   );
 }

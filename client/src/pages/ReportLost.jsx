@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
@@ -6,6 +7,9 @@ import Footer from "../components/Footer";
 
 function ReportLost() {
   const navigate = useNavigate();
+
+  // API URL
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const [formData, setFormData] = useState({
     itemName: "",
@@ -88,6 +92,13 @@ function ReportLost() {
         return;
       }
 
+      if (!API_URL) {
+        setError("API configuration is missing. Please try again later.");
+        console.error("VITE_API_URL is not configured.");
+        setLoading(false);
+        return;
+      }
+
       const data = new FormData();
 
       data.append("itemName", formData.itemName);
@@ -101,7 +112,7 @@ function ReportLost() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/lost-items",
+        `${API_URL}/api/lost-items`,
         {
           method: "POST",
           headers: {
@@ -135,6 +146,7 @@ function ReportLost() {
         navigate("/");
       }, 1500);
     } catch (error) {
+      console.error("Report Lost Error:", error);
       setError(error.message);
     } finally {
       setLoading(false);

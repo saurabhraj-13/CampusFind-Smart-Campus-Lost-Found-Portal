@@ -12,6 +12,8 @@ function FoundItemDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchFoundItem = async () => {
       const token = localStorage.getItem("token");
@@ -21,9 +23,16 @@ function FoundItemDetails() {
         return;
       }
 
+      if (!API_URL) {
+        setError("API configuration is missing. Please try again later.");
+        console.error("VITE_API_URL is not configured.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch(
-          `http://localhost:5000/api/found-items/${id}`,
+          `${API_URL}/api/found-items/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -52,7 +61,7 @@ function FoundItemDetails() {
     };
 
     fetchFoundItem();
-  }, [id, navigate]);
+  }, [id, navigate, API_URL]);
 
   if (loading) {
     return (
@@ -169,7 +178,7 @@ function FoundItemDetails() {
               {/* Image */}
               {item.image ? (
                 <img
-                  src={`http://localhost:5000${item.image}`}
+                  src={`${API_URL}${item.image}`}
                   alt={item.itemName}
                   className="w-full h-56 sm:h-72 md:h-80 object-contain bg-gray-100 dark:bg-gray-800"
                 />
@@ -204,6 +213,7 @@ function FoundItemDetails() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 sm:p-5">
+
                     <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500">
                       Item Name
                     </p>
@@ -211,9 +221,11 @@ function FoundItemDetails() {
                     <p className="font-semibold text-gray-800 dark:text-gray-100 mt-1 break-words">
                       {item.itemName}
                     </p>
+
                   </div>
 
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 sm:p-5">
+
                     <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500">
                       Category
                     </p>
@@ -221,9 +233,11 @@ function FoundItemDetails() {
                     <p className="font-semibold text-gray-800 dark:text-gray-100 mt-1 break-words">
                       {item.category}
                     </p>
+
                   </div>
 
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 sm:p-5">
+
                     <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500">
                       Found Location
                     </p>
@@ -231,9 +245,11 @@ function FoundItemDetails() {
                     <p className="font-semibold text-gray-800 dark:text-gray-100 mt-1 break-words">
                       📍 {item.foundLocation}
                     </p>
+
                   </div>
 
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 sm:p-5">
+
                     <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500">
                       Found Date
                     </p>
@@ -244,6 +260,7 @@ function FoundItemDetails() {
                         item.foundDate
                       ).toLocaleDateString()}
                     </p>
+
                   </div>
 
                 </div>

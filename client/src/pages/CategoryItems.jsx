@@ -16,12 +16,22 @@ function CategoryItems() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // API URL
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchItems = async () => {
       try {
+        setLoading(true);
+        setError("");
+
+        if (!API_URL) {
+          throw new Error("API configuration is missing.");
+        }
+
         const [lostResponse, foundResponse] = await Promise.all([
-          fetch("http://localhost:5000/api/lost-items"),
-          fetch("http://localhost:5000/api/found-items"),
+          fetch(`${API_URL}/api/lost-items`),
+          fetch(`${API_URL}/api/found-items`),
         ]);
 
         const lostData = await lostResponse.json();
@@ -62,7 +72,7 @@ function CategoryItems() {
     };
 
     fetchItems();
-  }, [selectedCategory]);
+  }, [selectedCategory, API_URL]);
 
   const handleLostDetails = (itemId) => {
     const token = localStorage.getItem("token");
@@ -200,7 +210,7 @@ function CategoryItems() {
 
                         {item.image ? (
                           <img
-                            src={`http://localhost:5000${item.image}`}
+                            src={`${API_URL}${item.image}`}
                             alt={item.itemName}
                             className="w-full h-48 sm:h-52 object-contain bg-gray-100 dark:bg-gray-800"
                           />
@@ -327,7 +337,7 @@ function CategoryItems() {
 
                         {item.image ? (
                           <img
-                            src={`http://localhost:5000${item.image}`}
+                            src={`${API_URL}${item.image}`}
                             alt={item.itemName}
                             className="w-full h-48 sm:h-52 object-contain bg-gray-100 dark:bg-gray-800"
                           />

@@ -20,6 +20,9 @@ function Register() {
     useState(false);
   const [loading, setLoading] = useState(false);
 
+  // API URL
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -54,11 +57,18 @@ function Register() {
       return;
     }
 
+    // Check API configuration
+    if (!API_URL) {
+      setError("API configuration is missing. Please try again later.");
+      console.error("VITE_API_URL is not configured.");
+      return;
+    }
+
     try {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        `${API_URL}/api/auth/register`,
         formData
       );
 
@@ -72,6 +82,8 @@ function Register() {
       }, 1500);
 
     } catch (error) {
+      console.error("Registration Error:", error);
+
       setError(
         error.response?.data?.message ||
           "Registration failed. Please try again."

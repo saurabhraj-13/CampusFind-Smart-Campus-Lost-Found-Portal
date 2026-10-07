@@ -8,11 +8,18 @@ function LostItems() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // API URL
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchLostItems = async () => {
       try {
+        if (!API_URL) {
+          throw new Error("API configuration is missing.");
+        }
+
         const response = await fetch(
-          "http://localhost:5000/api/lost-items"
+          `${API_URL}/api/lost-items`
         );
 
         const data = await response.json();
@@ -33,7 +40,7 @@ function LostItems() {
     };
 
     fetchLostItems();
-  }, []);
+  }, [API_URL]);
 
   const handleViewDetails = (itemId) => {
     const token = localStorage.getItem("token");
@@ -118,7 +125,7 @@ function LostItems() {
 
                   {item.image ? (
                     <img
-                      src={`http://localhost:5000${item.image}`}
+                      src={`${API_URL}${item.image}`}
                       alt={item.itemName}
                       className="w-full h-48 sm:h-52 object-contain bg-gray-100 dark:bg-gray-700"
                     />
