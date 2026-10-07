@@ -10,11 +10,21 @@ function Home() {
   return (
     <>
       <Navbar />
+
       <Hero />
+
       <SearchBar />
+
       <Categories />
+
+      {/* Recently Lost */}
+      <div id="lost-items">
+        <LostItems />
+      </div>
+
+      {/* Recently Found */}
       <FoundItems />
-      <LostItems />
+
       <Footer />
     </>
   );

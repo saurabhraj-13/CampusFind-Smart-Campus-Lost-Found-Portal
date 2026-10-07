@@ -15,12 +15,19 @@ function Register() {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+
+    setError("");
+    setMessage("");
   };
 
   const handleSubmit = async (e) => {
@@ -29,13 +36,36 @@ function Register() {
     setMessage("");
     setError("");
 
+    // Password validation
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    // Confirm password validation
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    // Phone validation
+    if (!/^[0-9]{10}$/.test(formData.phone)) {
+      setError("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const response = await axios.post(
         "http://localhost:5000/api/auth/register",
         formData
       );
 
-      setMessage(response.data.message);
+      setMessage(
+        response.data.message ||
+          "Registration successful! Please login."
+      );
 
       setTimeout(() => {
         navigate("/login");
@@ -44,141 +74,241 @@ function Register() {
     } catch (error) {
       setError(
         error.response?.data?.message ||
-        "Registration failed. Please try again."
+          "Registration failed. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center px-4 py-10">
 
-      <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl">
+      <div className="w-full max-w-md">
 
-        <h1 className="text-3xl font-bold text-center text-blue-600">
-          CampusFind
-        </h1>
-
-        <p className="text-center text-gray-500 mt-2">
-          Create Your Account
-        </p>
-
-        {message && (
-          <div className="mt-5 bg-green-100 text-green-700 p-3 rounded-lg text-center">
-            {message}
-          </div>
-        )}
-
-        {error && (
-          <div className="mt-5 bg-red-100 text-red-700 p-3 rounded-lg text-center">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="mt-8">
-
-          {/* Full Name */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">
-              Full Name
-            </label>
-
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Email */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">
-              Email
-            </label>
-
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Phone */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">
-              Phone Number
-            </label>
-
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Enter your phone number"
-              className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Password */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">
-              Password
-            </label>
-
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a password"
-              className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Confirm Password */}
-          <div className="mb-6">
-            <label className="block mb-2 font-semibold">
-              Confirm Password
-            </label>
-
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm your password"
-              className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
+        {/* Back to Home */}
+        <div className="mb-5">
           <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
+            onClick={() => navigate("/")}
+            className="text-gray-500 hover:text-blue-600 font-medium transition"
           >
-            Register
+            ← Back to Home
           </button>
+        </div>
 
-        </form>
+        {/* Register Card */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
 
-        <p className="text-center mt-6">
-          Already have an account?
+          {/* Logo */}
+          <div className="text-center">
 
-          <Link
-            to="/login"
-            className="text-blue-600 ml-2"
-          >
-            Login
-          </Link>
+            <div className="text-4xl mb-2">
+              🎒
+            </div>
+
+            <h1 className="text-3xl font-bold text-blue-600">
+              CampusFind
+            </h1>
+
+            <p className="text-gray-500 mt-2">
+              Create your account to get started.
+            </p>
+
+          </div>
+
+          {/* Success Message */}
+          {message && (
+            <div className="mt-6 bg-green-50 border border-green-200 text-green-700 p-3 rounded-lg text-center text-sm">
+              ✓ {message}
+            </div>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="mt-6 bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg text-center text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="mt-7">
+
+            {/* Full Name */}
+            <div className="mb-4">
+
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Full Name
+              </label>
+
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter your full name"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                disabled={loading}
+                required
+              />
+
+            </div>
+
+            {/* Email */}
+            <div className="mb-4">
+
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Email Address
+              </label>
+
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                disabled={loading}
+                required
+              />
+
+            </div>
+
+            {/* Phone */}
+            <div className="mb-4">
+
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Phone Number
+              </label>
+
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Enter 10-digit phone number"
+                maxLength="10"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                disabled={loading}
+                required
+              />
+
+            </div>
+
+            {/* Password */}
+            <div className="mb-4">
+
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Password
+              </label>
+
+              <div className="relative">
+
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a password"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  disabled={loading}
+                  required
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-600"
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </button>
+
+              </div>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Minimum 6 characters
+              </p>
+
+            </div>
+
+            {/* Confirm Password */}
+            <div className="mb-6">
+
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Confirm Password
+              </label>
+
+              <div className="relative">
+
+                <input
+                  type={
+                    showConfirmPassword
+                      ? "text"
+                      : "password"
+                  }
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm your password"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  disabled={loading}
+                  required
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowConfirmPassword(
+                      !showConfirmPassword
+                    )
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-600"
+                >
+                  {showConfirmPassword ? "🙈" : "👁️"}
+                </button>
+
+              </div>
+
+            </div>
+
+            {/* Register Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full text-white py-3 rounded-lg font-semibold transition ${
+                loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {loading
+                ? "Creating Account..."
+                : "Create Account"}
+            </button>
+
+          </form>
+
+          {/* Login */}
+          <div className="text-center mt-6">
+
+            <p className="text-gray-500">
+              Already have an account?
+
+              <Link
+                to="/login"
+                className="text-blue-600 font-semibold ml-2 hover:underline"
+              >
+                Login
+              </Link>
+            </p>
+
+          </div>
+
+        </div>
+
+        {/* Footer Text */}
+        <p className="text-center text-gray-400 text-sm mt-5">
+          Find it. Report it. Return it. 🎒
         </p>
 
       </div>

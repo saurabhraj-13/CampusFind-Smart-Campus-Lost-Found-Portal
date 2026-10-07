@@ -5,10 +5,22 @@ const jwt = require("jsonwebtoken");
 // Register User
 const registerUser = async (req, res) => {
   try {
-    const { name, email, phone, password, confirmPassword } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      password,
+      confirmPassword,
+    } = req.body;
 
     // Check all fields
-    if (!name || !email || !phone || !password || !confirmPassword) {
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !password ||
+      !confirmPassword
+    ) {
       return res.status(400).json({
         message: "Please fill all fields",
       });
@@ -50,7 +62,6 @@ const registerUser = async (req, res) => {
         phone: user.phone,
       },
     });
-
   } catch (error) {
     console.error("Registration Error:", error);
 
@@ -119,7 +130,6 @@ const loginUser = async (req, res) => {
         role: user.role,
       },
     });
-
   } catch (error) {
     console.error("Login Error:", error);
 
@@ -130,8 +140,39 @@ const loginUser = async (req, res) => {
 };
 
 
-// Export both functions
+// Get Current User
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select(
+      "-password"
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found.",
+      });
+    }
+
+    res.status(200).json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+    });
+  } catch (error) {
+    console.error("Get Current User Error:", error);
+
+    res.status(500).json({
+      message: "Server error while fetching user.",
+    });
+  }
+};
+
+
+// Export functions
 module.exports = {
   registerUser,
   loginUser,
+  getCurrentUser,
 };

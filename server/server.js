@@ -3,19 +3,28 @@ const cors = require("cors");
 require("dotenv").config();
 
 const connectDB = require("./config/db");
+
 const authRoutes = require("./routes/authRoutes");
 const lostItemRoutes = require("./routes/lostItemRoutes");
+const foundItemRoutes = require("./routes/foundItemRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// Serve uploaded images
+app.use("/uploads", express.static("uploads"));
+
+// Connect MongoDB
 connectDB();
 
-app.use("/api/lost-items", lostItemRoutes);
+// Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/lost-items", lostItemRoutes);
+app.use("/api/found-items", foundItemRoutes);
 
+// Test route
 app.get("/", (req, res) => {
   res.send("CampusFind Backend Running 🚀");
 });
